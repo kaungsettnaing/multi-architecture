@@ -3,10 +3,12 @@ name: NodeJS
 on:
   workflow_dispatch:    # Manually trigger the workflow from GitHub UI
   push:
-    branches: [ "dev" ]
+    branches: 
+        - origin/dev
     paths: ["app/**"]
   pull_request:
-    branches: [ "main" ]
+    branches:
+        - origin/main
     paths: ["app/**"]
 
 permissions:
