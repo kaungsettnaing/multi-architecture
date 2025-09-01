@@ -1,0 +1,38 @@
+name: NodeJS
+
+on:
+  workflow_dispatch:    # Manually trigger the workflow from GitHub UI
+  push:
+    branches: [ "dev" ]
+    paths: ["app/**"]
+  pull_request:
+    branches: [ "main" ]
+    paths: ["app/**"]
+
+permissions:
+  id-token: write
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+    env:
+      aws_id: ${{vars.AWS_ID}}
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Configure AWS Credentials
+      uses: aws-actions/configure-aws-credentials@main
+      with:
+        role-to-assume: arn:aws:iam::${{env.aws_id}}:role/nodejsappdev
+        aws-region: us-east-1
+
+    - name: Build and push Docker image
+      uses: docker/build-push-action@v5
+      with:
+          context: app/Containerfile
+          push: true
+          url: ${{env.aws_id}}.dkr.ecr.us-east-1.amazonaws.com/ksn-nodejs-repo
+          tags: your_docker_username/your_image_name:latest
+
+
+
