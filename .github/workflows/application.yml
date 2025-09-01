@@ -4,11 +4,11 @@ on:
   workflow_dispatch:    # Manually trigger the workflow from GitHub UI
   push:
     branches: 
-        - origin/dev
+        - dev/*
     paths: ["app/**"]
   pull_request:
     branches:
-        - origin/main
+        - dev/*
     paths: ["app/**"]
 
 permissions:
