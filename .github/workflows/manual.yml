@@ -32,6 +32,13 @@ jobs:
         role-to-assume: arn:aws:iam::${{env.aws_id}}:role/nodejsappdev
         aws-region: us-east-1
 
+    - name: debugging path
+      uses: shell
+      run: |
+      ls -la
+      cd app/
+      ls -la
+    
     - name: Build and push Docker image
       uses: docker/build-push-action@v5
       with:
