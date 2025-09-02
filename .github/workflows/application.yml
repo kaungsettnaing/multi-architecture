@@ -26,6 +26,7 @@ jobs:
       aws_id: ${{vars.AWS_ID}}
     steps:
     - uses: actions/checkout@v4
+        
 
     - name: Configure AWS Credentials
       uses: aws-actions/configure-aws-credentials@main
