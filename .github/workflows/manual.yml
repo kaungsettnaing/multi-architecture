@@ -2,6 +2,11 @@ name: NodeJS
 
 on:
   workflow_dispatch:    # Manually trigger the workflow from GitHub UI
+    inputs:
+      branch:
+        description: 'Branch to run the workflow on'
+        required: true
+        default: 'dev' # Default branch when manually triggering
   push:
     branches:
       - main
