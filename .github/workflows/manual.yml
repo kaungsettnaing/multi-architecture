@@ -2,11 +2,6 @@ name: NodeJS
 
 on:
   workflow_dispatch:    # Manually trigger the workflow from GitHub UI
-    inputs:
-      branch:
-        description: 'Branch to run the workflow on'
-        required: true
-        default: 'dev' # Default branch when manually triggering
   push:
     branches:
       - main
@@ -42,7 +37,7 @@ jobs:
           context: app/Containerfile
           push: true
           url: ${{env.aws_id}}.dkr.ecr.us-east-1.amazonaws.com/ksn-nodejs-repo
-          tags: your_docker_username/your_image_name:latest
+          tags: ksn/nodejs_static_website:latest
 
 
 
