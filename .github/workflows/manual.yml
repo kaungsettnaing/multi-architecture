@@ -34,7 +34,7 @@ jobs:
     - name: Build and push Docker image
       uses: docker/build-push-action@v5
       with:
-          context: app/Containerfile
+          context: app/
           push: true
           url: ${{env.aws_id}}.dkr.ecr.us-east-1.amazonaws.com/ksn-nodejs-repo
           tags: ksn/nodejs_static_website:latest
