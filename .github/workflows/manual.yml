@@ -49,12 +49,12 @@ jobs:
         REPOSITORY: ksn-nodejs-repo
         IMAGE_TAG: ${{ github.sha }}
       run: |
-        docker build -t $REGISTRY/$REPOSITORY:$IMAGE_TAG -f .app/Dockerfile
+        docker build ./app/ -t $REGISTRY/$REPOSITORY:$IMAGE_TAG
         docker push $REGISTRY/$REPOSITORY:$IMAGE_TAG
         echo "IMAGE $IMAGE_TAG is pushed to $ECR_REGISTRY/$ECR_REPOSITORY"
         echo "image_tag=$IMAGE_TAG" 
         echo "full_image=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG"
-        
+
 
 
 
