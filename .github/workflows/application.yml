@@ -2,18 +2,14 @@ name: Dev
 
 on:
   workflow_dispatch:    # Manually trigger the workflow from GitHub UI
-    inputs:
-        branch:
-            description: 'Branch to run the workflow on'
-            required: true
-            default: 'dev' # Default branch when manually triggering
+
   push:
     branches: 
-        - dev/*
+        - main
     paths: ["app/**"]
   pull_request:
     branches:
-        - dev/*
+        - main
     paths: ["app/**"]
 
 permissions:
@@ -25,8 +21,7 @@ jobs:
     env:
       aws_id: ${{vars.AWS_ID}}
     steps:
-    - uses: actions/checkout@v4
-        
+    - uses: actions/checkout@v5
 
     - name: Configure AWS Credentials
       uses: aws-actions/configure-aws-credentials@main
@@ -34,13 +29,24 @@ jobs:
         role-to-assume: arn:aws:iam::${{env.aws_id}}:role/nodejsappdev
         aws-region: us-east-1
 
-    - name: Build and push Docker image
-      uses: docker/build-push-action@v5
-      with:
-          context: app/Containerfile
-          push: true
-          url: ${{env.aws_id}}.dkr.ecr.us-east-1.amazonaws.com/ksn-nodejs-repo
-          tags: your_docker_username/your_image_name:latest
+    - name: debugging path
+      shell: bash
+      run: |
+        cd app
+        ls -la
+  
+    - name: Login to Amazon ECR
+      id: login-ecr
+      uses: aws-actions/amazon-ecr-login@v2
 
-
-
+    - name: Build, tag, and push docker image to Amazon ECR
+      env:
+        REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+        REPOSITORY: ksn-nodejs-repo       ##change this to your repo name
+        IMAGE_TAG: ${{ github.sha }}
+      run: |
+        docker build app/ -t $REGISTRY/$REPOSITORY:$IMAGE_TAG
+        docker push $REGISTRY/$REPOSITORY:$IMAGE_TAG
+        echo "IMAGE $IMAGE_TAG is pushed to $ECR_REGISTRY/$ECR_REPOSITORY"
+        echo "image_tag=$IMAGE_TAG" 
+        echo "full_image=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG"
