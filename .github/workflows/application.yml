@@ -20,6 +20,7 @@ jobs:
     env:
       aws_id: ${{vars.AWS_ID}}
       ec2_hostname: ${{vars.EC2_HOSTNAME}}   ##change this to your instance id
+      key: ${{ secrets.EC2_SSH_KEY }}
     steps:
     - uses: actions/checkout@v5
 
@@ -57,14 +58,12 @@ jobs:
         REGISTRY: ${{ steps.login-ecr.outputs.registry }}
         REPOSITORY: ksn-nodejs-repo       ##change this to your repo name
         IMAGE_TAG: ${{ github.sha }}
-        host: ${{env.ec2_hostname}}   ##change this to your instance public dns
-        key: ${{ secrets.EC2_SSH_KEY }}
 #      with:
 #        host: ${{env.ec2_hostname}}   ##change this to your instance public dns
 #        username: ec2-user
 #        key: ${{ secrets.EC2_SSH_KEY }}
       run: |
-          ssh -i ${key} ec2-user@${host}
+          ssh -i ${{env.key}} ec2-user@${{env.ec2_hostname}}
           aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin $REGISTRY/$REPOSITORY
           docker pull $REGISTRY/$REPOSITORY:$IMAGE_TAG
           docker stop nodejsapp || true
