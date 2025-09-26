@@ -62,6 +62,6 @@ jobs:
         username: ec2-user
         key: ${{ secrets.EC2_SSH_KEY }}
         script: |
-          aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin $REGISTRY/$REPOSITORY
-          docker pull $REGISTRY/$REPOSITORY:$IMAGE_TAG
-          docker run -d -p 80:8080 --name nodejsapp $REGISTRY/$REPOSITORY:$IMAGE_TAG
+          aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin ${{env.REGISTRY}}/${{env.REPOSITORY}}
+          docker pull ${{env.REGISTRY}}/${{env.REPOSITORY}}:${{env.IMAGE_TAG}}
+          docker run -d -p 80:8080 --name nodejsapp ${{env.REGISTRY}}/${{env.REPOSITORY}}:${{env.IMAGE_TAG}}
