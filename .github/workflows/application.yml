@@ -64,4 +64,6 @@ jobs:
         script: |
           aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin ${{env.REGISTRY}}/${{env.REPOSITORY}}
           docker pull ${{env.REGISTRY}}/${{env.REPOSITORY}}:${{env.IMAGE_TAG}}
+          docker stop nodejsapp || true
+          docker rm nodejsapp || true
           docker run -d -p 80:8080 --name nodejsapp ${{env.REGISTRY}}/${{env.REPOSITORY}}:${{env.IMAGE_TAG}}
