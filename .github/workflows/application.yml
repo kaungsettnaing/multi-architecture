@@ -1,8 +1,7 @@
-name: Dev
+name: Application CI/CD
 
 on:
   workflow_dispatch:    # Manually trigger the workflow from GitHub UI
-
   push:
     branches: 
         - main
@@ -20,7 +19,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       aws_id: ${{vars.AWS_ID}}
-      ec2_instance_id: ${{vars.ec2_instance_id}}   ##change this to your instance id
+      ec2_instance_id: ${{vars.EC2_INSTANCE_ID}}   ##change this to your instance id
     steps:
     - uses: actions/checkout@v5
 
