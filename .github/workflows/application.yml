@@ -52,16 +52,19 @@ jobs:
         echo "full_image=$ECR_REGISTRY/$ECR_REPOSITORY/nodejsapp:$IMAGE_TAG"
 
     - name: SSH into EC2 instance and run commands
-      uses: appleboy/ssh-action@v1
+##      uses: appleboy/ssh-action@v1
       env:
         REGISTRY: ${{ steps.login-ecr.outputs.registry }}
         REPOSITORY: ksn-nodejs-repo       ##change this to your repo name
         IMAGE_TAG: ${{ github.sha }}
-      with:
         host: ${{env.ec2_hostname}}   ##change this to your instance public dns
-        username: ec2-user
         key: ${{ secrets.EC2_SSH_KEY }}
-        script: |
+#      with:
+#        host: ${{env.ec2_hostname}}   ##change this to your instance public dns
+#        username: ec2-user
+#        key: ${{ secrets.EC2_SSH_KEY }}
+      run: |
+          ssh -i ${key} ec2-user@${host}
           aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin $REGISTRY/$REPOSITORY
           docker pull $REGISTRY/$REPOSITORY/nodejsapp:$IMAGE_TAG
           docker stop nodejsapp || true
