@@ -45,11 +45,11 @@ jobs:
         REPOSITORY: ksn-nodejs-repo       ##change this to your repo name
         IMAGE_TAG: ${{ github.sha }}
       run: |
-        docker build app/ -t $REGISTRY/$REPOSITORY:$IMAGE_TAG
-        docker push $REGISTRY/$REPOSITORY:$IMAGE_TAG
+        docker build app/ -t ${REGISTRY}/${REPOSITORY}/nodejsapp:${IMAGE_TAG}
+        docker push $REGISTRY/$REPOSITORY/nodejsapp:$IMAGE_TAG
         echo "IMAGE $IMAGE_TAG is pushed to $ECR_REGISTRY/$ECR_REPOSITORY"
         echo "image_tag=$IMAGE_TAG" 
-        echo "full_image=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG"
+        echo "full_image=$ECR_REGISTRY/$ECR_REPOSITORY/nodejsapp:$IMAGE_TAG"
 
     - name: SSH into EC2 instance and run commands
       uses: appleboy/ssh-action@v1
@@ -63,7 +63,7 @@ jobs:
         key: ${{ secrets.EC2_SSH_KEY }}
         script: |
           aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin $REGISTRY/$REPOSITORY
-          docker pull $REGISTRY/$REPOSITORY:$IMAGE_TAG
+          docker pull $REGISTRY/$REPOSITORY/nodejsapp:$IMAGE_TAG
           docker stop nodejsapp || true
           docker rm nodejsapp || true
-          docker run -d -p 80:8080 --name nodejsapp $REGISTRY/$REPOSITORY:$IMAGE_TAG
+          docker run -d -p 80:8080 --name nodejsapp $REGISTRY/$REPOSITORY/nodejsapp:$IMAGE_TAG
