@@ -20,6 +20,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       aws_id: ${{vars.AWS_ID}}
+      ec2_instance_id: ${{vars.ec2_instance_id}}   ##change this to your instance id
     steps:
     - uses: actions/checkout@v5
 
@@ -50,3 +51,24 @@ jobs:
         echo "IMAGE $IMAGE_TAG is pushed to $ECR_REGISTRY/$ECR_REPOSITORY"
         echo "image_tag=$IMAGE_TAG" 
         echo "full_image=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG"
+
+    - name: Setup SSH Connection
+      uses: bondz/ssh-ec2-action@v1
+      with:
+        ec2-instance-id: ${{ec2_instance_id}}   ##change this to your instance id
+        remote-user: ec2-user
+
+    - name: SSH into EC2 instance and run commands
+      uses: appleboy/ssh-action@v1
+      env:
+        REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+        REPOSITORY: ksn-nodejs-repo       ##change this to your repo name
+        IMAGE_TAG: ${{ github.sha }}
+      with:
+        host: i-ec2-instance-id
+        script: |
+          aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin $REGISTRY/$REPOSITORY
+          docker pull $REGISTRY/$REPOSITORY:$IMAGE_TAG
+          docker stop nodejsapp || true
+          docker rm nodejsapp || true
+          docker run -d -p 80:8080 --name nodejsapp $REGISTRY/$REPOSITORY:$IMAGE_TAG
